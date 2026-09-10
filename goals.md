@@ -1,0 +1,3 @@
+- []: Изучить Kubernetes
+- []: Изучить Grafana
+- []: Изучить Terraform
