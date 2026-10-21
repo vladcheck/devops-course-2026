@@ -114,3 +114,20 @@ sudo ufw enable
 sudo hostnamectl set-hostname devops-vm
 sudo sed -i 's/^127.0.1.1.*/127.0.1.1 devops-vm.devops.local devops-vm/' /etc/hosts
 ```
+
+## 10. Веб-сервер
+
+- **Устанавливаемый пакет:** `nginx` (из стандартного репозитория Ubuntu).
+- **Путь к конфигурации ресурса:** `/etc/nginx/sites-available/devops-site` (симлинк в `/etc/nginx/sites-enabled/devops-site`).
+- **Каталог ресурса:** `/var/www/devops-site`.
+- **Владелец и права:** Владелец `devops:devops`. Права: `755` для каталогов, `644` для файлов.
+- **Пути к сертификату и ключу:** Сертификат — `/etc/ssl/certs/devops.crt` (права `644`, владелец `root`); Ключ — `/etc/ssl/private/devops.key` (права `600`, владелец `root`).
+- **Команда формирования сертификата:**
+  ```bash
+  sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /etc/ssl/private/devops.key \
+    -out /etc/ssl/certs/devops.crt \
+    -subj "/CN=devops.local" \
+    -addext "subjectAltName=DNS:devops.local"
+  ```
+- **Срок действия сертификата**: 365 дней.
