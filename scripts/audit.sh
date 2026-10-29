@@ -54,6 +54,13 @@ check "Контейнер БД в состоянии healthy" "healthy" "$(docke
 check "Порты 5000 и 5432 не прослушиваются на 0.0.0.0" "" "$(sudo ss -tln | grep -E '0.0.0.0:(5000|5432)' || true)"
 check "Права файла .env равны 600" "600" "$(stat -c '%a' ~/app/.env 2>/dev/null || echo 'missing')"
 
+echo "[6] Контрольная работа #2"
+check "Redis healthy" "healthy" "$(docker compose --project-directory ~/kr2 ps -q redis | xargs -r docker inspect -f '{{.State.Health.Status}}')"
+check "Порт 8004 только на 127.0.0.1" "127.0.0.1:8004" "$(docker compose --project-directory ~/kr2 port app 8004)"
+check "Права .env равны 600" "600" "$(stat -c '%a' ~/kr2/.env)"
+check "Сертификат kr2 > 30 дней" "0" "$(sudo openssl x509 -checkend 2592000 -noout -in /etc/ssl/certs/kr2.crt > /dev/null 2>&1; echo $?)"
+check "Симлинк kr2 существует" "yes" "$( [ -L /etc/nginx/sites-enabled/kr2 ] && echo 'yes' || echo 'no' )"
+
 echo "----------------------------------------"
 echo "Пройдено: $PASS, не пройдено: $FAIL"
 [[ $FAIL -eq 0 ]] && exit 0 || exit 1
